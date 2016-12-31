@@ -31,9 +31,15 @@
                         Strategy <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('ctaAlgo.ctaRun') }}">Show Strategy</a></li>
+                        <li><a href="{{ url_for('ctaAlgo.ctaRun') }}">test Strategy</a></li>
                         <li><a href="{{ url_for('ctaAlgo.uploadStrategy') }}">Upload Strategy</a></li>
-                        <li><a href="{{ url_for('ctaAlgo.manageStrategy') }}">Manage Strategy</a></li>
+                        <li><a href="{{ url_for('ctaAlgo.showStrategy') }}">Manage Strategy</a></li>
+                        <li><a href="{{ url_for('ctaAlgo.showStrategy') }}">Show Strategy</a></li>
+                        {% if current_user.is_administrator() %}
+                        <li role="presentation" class="divider"></li>
+                        <li><a href="{{ url_for('ctaAlgo.manageData') }}">Manage Data</a></li>
+                        <li><a href="{{ url_for('ctaAlgo.statData') }}">Stat Data</a></li>                        
+                        {% endif %}
                     </ul>
                 </li>
                 {% endif %}

@@ -7,6 +7,7 @@ from flask_login import LoginManager
 from flask_pagedown import PageDown
 from flask_pymongo import PyMongo
 from config import config
+from tdbpy import tdbapi as tdbapipy
 
 bootstrap = Bootstrap()
 mail = Mail()
@@ -14,6 +15,7 @@ moment = Moment()
 db = SQLAlchemy()
 pagedown = PageDown()
 mongo = PyMongo()
+tdbapi = tdbapipy.tdbapi
 
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
