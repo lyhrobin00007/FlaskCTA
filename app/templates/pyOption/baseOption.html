@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Flasky - {{name}}{% endblock %}
+{% block page_content %}
+<div class="page-header">
+    <h1>{{name}}</h1>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Input</h3>
+            </div>
+            <div class="panel-body">
+                {{ wtf.quick_form(form,form_type="horizontal",horizontal_columns=('lg', 2, 10)) }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">Result</h3>
+            </div>
+            <div class="panel-body">
+                {{tableResult}}
+            </div>
+        </div>
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">Detail</h3>
+            </div>
+            <div class="panel-body">
+                Calculation Detail
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <h3 class="panel-title">Description</h3>
+            </div>
+            <div class="panel-body">
+                {% for item in description -%}
+                    {{ item }}<br/>
+                {%- endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+

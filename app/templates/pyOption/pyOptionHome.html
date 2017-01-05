@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Flasky - {{name}}{% endblock %}
+{% block page_content %}
+<div class="page-header">
+    <h1 id="modelName"></h1>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Input</h3>
+            </div>
+            <div class="panel-body">
+                {{ wtf.quick_form(form,form_type="horizontal",horizontal_columns=('lg', 2, 10),id="optionForm") }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">Result</h3>
+            </div>
+            <div class="panel-body" id="tableResult">
+                Calculation Result
+            </div>
+        </div>
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">Detail</h3>
+            </div>
+            <div class="panel-body" id="detailResult">
+                Calculation Detail
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <h3 class="panel-title">Description</h3>
+            </div>
+            <div class="panel-body">
+                Model Description
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+$(document).ready(function(){
+    var paramDict = {
+        "#S0":{"value":"105","isHide":false},
+        "#K":{"value":"105","isHide":false},
+        "#K1":{"value":"100","isHide":false},              
+        "#K2":{"value":"110","isHide":false},
+        "#T":{"value":"1","isHide":false},
+        "#r":{"value":"0.03","isHide":false},                
+        "#q":{"value":"0","isHide":false},
+        "#sigma":{"value":"0.2","isHide":false},
+        "#N":{"value":"91","isHide":false},
+        "#Rp":{"value":"0","isHide":false},
+        "#I":{"value":"2000","isHide":false},
+        "#M":{"value":"91","isHide":false},
+        "#seedNum":{"value":"2000","isHide":false}
+    };
+    var selectDict = {
+        "European":
+            ["#S0","#K","#T","#r","#q","#sigma"],
+        "BullSpread":
+            ["#S0","#K1","#K2","#T","#r","#q","#sigma"],
+        "BullSpreadPathN":
+            ["#S0","#K1","#K2","#T","#r","#q","#sigma","#N","#I","#M","#seedNum"],
+        "DoubleNoTouch":
+            ["#S0","#K","#T","#r","#q","#sigma","#Rp","#I","#M","#seedNum"],
+        "OutOfRangeRate":
+            ["#S0","#K","#T","#r","#q","#sigma","#Rp","#I","#M","#seedNum"],
+        "DownAndOutAlternative":
+            ["#S0","#K1","#K2","#T","#r","#q","#sigma","#Rp","#I","#M","#seedNum"],
+        "ModerateOption":
+            ["#S0","#K1","#K2","#T","#r","#q","#sigma","#Rp","#I","#M","#seedNum"]                   
+    };
+    
+    var selectChangeFunc = function(pDict){
+        for (var prop in pDict){
+            if (pDict[prop]["isHide"]){
+                $(prop).parent().parent().hide();
+                $(prop).val(pDict[prop]["value"]);
+            }else{
+                $(prop).parent().parent().show(); 
+                $(prop).val(pDict[prop]["value"]);
+            }
+        }
+    };
+
+    var changeDictFunc = function(pDict,chs){
+        for (var prop in pDict){
+            pDict[prop]["isHide"] = true;
+        }
+        for (var i = 0, l = chs.length; i < l; i++){
+            pDict[chs[i]]["isHide"] = false;
+        }
+        return pDict
+    };    
+    
+    $("#modelName").text("European")
+    paramDict = changeDictFunc(paramDict,selectDict["European"]);
+    selectChangeFunc(paramDict)
+
+    $("#optionForm").submit(function () {
+        $.ajax({ type: 'POST', data: $(this).serialize(), url: '',
+            success: function (data) { 
+                $("#tableResult").html(data.tableResult);
+            },
+            error: function (xhr) {
+                alert("error");
+            } 
+        });
+        return false;
+    });
+    
+    $("#optionStyle").change(function(){
+        paramDict = changeDictFunc(paramDict,selectDict[$("#optionStyle").val()]);
+        selectChangeFunc(paramDict)
+        $("#modelName").text($("#optionStyle").val())
+    });
+                
+});
+</script>
+{% endblock %}
+

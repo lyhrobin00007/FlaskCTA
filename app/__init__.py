@@ -14,7 +14,7 @@ mail = Mail()
 moment = Moment()
 db = SQLAlchemy()
 pagedown = PageDown()
-mongo = PyMongo()
+tickmongo = PyMongo()
 tdbapi = tdbapipy.tdbapi
 
 login_manager = LoginManager()
@@ -33,7 +33,7 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
     pagedown.init_app(app)
-    mongo.init_app(app)
+    tickmongo.init_app(app, config_prefix='TICKMONGO')
 
     if not app.debug and not app.testing and not app.config['SSL_DISABLE']:
         from flask_sslify import SSLify
@@ -50,5 +50,8 @@ def create_app(config_name):
 
     from .ctaAlgo import ctaAlgo as ctaAlgo_blueprint
     app.register_blueprint(ctaAlgo_blueprint, url_prefix='/ctaAlgo')    
+    
+    from .pyOption import pyOption as pyOption_blueprint
+    app.register_blueprint(pyOption_blueprint, url_prefix='/pyOption')
     
     return app

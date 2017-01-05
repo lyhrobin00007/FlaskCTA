@@ -31,17 +31,39 @@
                         Strategy <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('ctaAlgo.ctaRun') }}">test Strategy</a></li>
                         <li><a href="{{ url_for('ctaAlgo.uploadStrategy') }}">Upload Strategy</a></li>
-                        <li><a href="{{ url_for('ctaAlgo.showStrategy') }}">Manage Strategy</a></li>
                         <li><a href="{{ url_for('ctaAlgo.showStrategy') }}">Show Strategy</a></li>
+                                       
+                        <li><a href="{{ url_for('ctaAlgo.ctaRun') }}">test Strategy</a></li>
+                        <li><a href="{{ url_for('ctaAlgo.showStrategy') }}">Manage Strategy</a></li>
+                                       
                         {% if current_user.is_administrator() %}
                         <li role="presentation" class="divider"></li>
+                        <li><a href="{{ url_for('ctaAlgo.TDB_CodeTableView') }}">CodeTable</a></li>
+                        <li><a href="{{ url_for('ctaAlgo.TDB_TickDataView') }}">TickData</a></li>
                         <li><a href="{{ url_for('ctaAlgo.manageData') }}">Manage Data</a></li>
                         <li><a href="{{ url_for('ctaAlgo.statData') }}">Stat Data</a></li>                        
                         {% endif %}
                     </ul>
                 </li>
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        Option <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('pyOption.pyOptionHome') }}">Option Home</a></li>
+                        <li role="presentation" class="divider"></li>
+                        <li><a href="{{ url_for('pyOption.pyOptionIndex') }}">Option Index</a></li>
+                        <li role="presentation" class="divider"></li>
+                        <li><a href="{{ url_for('pyOption.European') }}">European</a></li>
+                        <li><a href="{{ url_for('pyOption.BullSpread') }}">Bull Spread</a></li>
+                        <li><a href="{{ url_for('pyOption.OptionMCS1') }}">Option MCS 1</a></li>
+                        <li><a href="{{ url_for('pyOption.OptionMCS2') }}">Option MCS 2</a></li>
+                        <li><a href="{{ url_for('pyOption.OptionMCS3') }}">Option MCS 3</a></li>
+                    </ul>
+                </li>
+                
                 {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">

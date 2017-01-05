@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Flasky - {{name}}{% endblock %}
+{% block page_content %}
+<div ng-app="myApp"  ng-controller="siteCtrl" >
+<div class="page-header">
+    <h1><span ng-bind="optionStyle"></span></h1>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Input</h3>
+            </div>
+            <div class="panel-body">
+                <form action="" method="post" class="form form-horizontal" role="form">
+                    {{ form.csrf_token }}                    
+                    <div class="form-group  required">
+        			<label class="control-label  col-lg-3" for="optionStyle">style</label>
+        			<div class=" col-lg-9">
+        				<select class="form-control" id="optionStyle" name="optionStyle" ng-model="optionStyle" ng-change="optionStyleChange()" required >
+            				<option value="European">European</option>
+                                  <option value="BullSpread">BullSpread</option>
+                                  <option value="BullSpreadPathN">BullSpreadPathN</option>
+            				<option value="DoubleNoTouch">DoubleNoTouch</option>
+            				<option value="OutOfRangeRate">OutOfRangeRate</option>
+            				<option value="DownAndOutAlternative">DownAndOutAlternative</option>
+            				<option value="ModerateOption">ModerateOption</option>
+                            </select>
+        			</div>
+                    </div>
+                    <div class="form-group  required">
+                        <label class="control-label  col-lg-3" for="optionType">type</label>
+                        <div class=" col-lg-9">
+                            <select class="form-control" id="optionType" name="optionType" ng-model="optionType" required>
+                    			<option value="call">call</option>
+                    			<option value="put">put</option>
+                           </select>
+                        </div>
+                    </div>
+                    {% for i in range(inputs|length) %}
+                    <div class="form-group  required" ng-hide={{inputsHide[i]}}>
+                        <label class="control-label  col-lg-3" for={{inputs[i]}}>{{inputs[i]}}</label>
+                        <div class=" col-lg-9">
+                            <input class="form-control" id={{inputs[i]}} name={{inputs[i]}} required type="text" ng-model={{inputs[i]}}>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="form-group">
+                        <div class="col-lg-offset-3 col-lg-9">
+                            <input class="btn btn-default" id="submit" name="submit" type="submit" value="Calculate" ng-click=CalculateClick()>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">Result</h3>
+            </div>
+            <div class="panel-body" id="tableResult">
+            <!--tableResult-->
+            </div>
+        </div>
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">Detail</h3>
+            </div>
+            <div class="panel-body">
+                Calculation Detail
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <h3 class="panel-title">Description</h3>
+            </div>
+            <div class="panel-body">
+                Model Description
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="http://lib.sinaapp.com/js/angular.js/angular-1.2.19/angular.min.js"></script>  
+<script>
+var app = angular.module('myApp', []);
+app.controller('siteCtrl', function($scope, $http) {
+  $scope.hideS0 = false;
+  $scope.hideK = false;
+  $scope.hideK1 = true;
+  $scope.hideK2 = true;
+  $scope.hideT = false;
+  $scope.hider = false;
+  $scope.hideq = false;
+  $scope.hidesigma = false;
+  $scope.hideN = true;
+  $scope.hideRp = true;
+  $scope.hideI = true;
+  $scope.hideM = true;
+  $scope.hideSeed = true;
+  $scope.optionStyle = "European";
+  $scope.optionType = "call";
+  $scope.tableResult = "Calculation Result";
+  document.getElementById("tableResult").innerHTML=$scope.tableResult;
+
+  $scope.S0 = 105;
+  $scope.K = 100;
+  $scope.K1 = 100;
+  $scope.K2 = 110;
+  $scope.T = 1;
+  $scope.r = 0.03;
+  $scope.q = 0.0;
+  $scope.sigma = 0.2;
+  $scope.N = 4;
+  $scope.Rp = 0.03;
+  $scope.I = 2500
+  $scope.M = 91;
+  $scope.seedNum = 2000;
+  
+  $scope.CalculateClick = function(){
+　　$http.post("_pyOptionIndex",
+             {"count":$scope.count,
+              "S0":$scope.S0,
+              "K":$scope.K,
+              "K1":$scope.K1,
+              "K2":$scope.K2,
+              "T":$scope.T,
+              "r":$scope.r,
+              "q":$scope.q,
+              "sigma":$scope.sigma,
+              "N":$scope.N,
+              "Rp":$scope.Rp,
+              "I":$scope.I,
+              "M":$scope.M,
+              "seed":$scope.seed,
+              "optionStyle":$scope.optionStyle,
+              "optionType":$scope.optionType,
+              })
+      .success(function (response) {
+        $scope.tableResult = response.tableResult;
+        document.getElementById("tableResult").innerHTML=$scope.tableResult;
+        $(".btn").button("reset")
+    });
+  };
+  
+  $scope.optionStyleChange = function(){
+    switch($scope.optionStyle)
+    {
+      case "BullSpreadPathN":
+        $scope.hideK = true;
+        $scope.hideK1 = false;
+        $scope.hideK2 = false;
+        $scope.hideN = false;
+        $scope.hideRp = true;
+        $scope.hideI = false;
+        $scope.hideM = false;
+        $scope.hideSeed = false;
+        break;
+      case "DoubleNoTouch":
+        $scope.hideK = true;
+        $scope.hideK1 = false;
+        $scope.hideK2 = false;
+        $scope.hideN = true;
+        $scope.hideRp = false;
+        $scope.hideI = false;
+        $scope.hideM = false;
+        $scope.hideSeed = false;
+        break;
+      case "OutOfRangeRate":
+        $scope.hideK = true;
+        $scope.hideK1 = false;
+        $scope.hideK2 = false;
+        $scope.hideN = true;
+        $scope.hideRp = false;
+        $scope.hideI = false;
+        $scope.hideM = false;
+        $scope.hideSeed = false;
+        break;
+      case "DownAndOutAlternative":
+        $scope.hideK = false;
+        $scope.hideK1 = true;
+        $scope.hideK2 = true;
+        $scope.hideN = true;
+        $scope.hideRp = false;
+        $scope.hideI = false;
+        $scope.hideM = false;
+        $scope.hideSeed = false;
+        break;
+      case "ModerateOption":
+        $scope.hideK = false;
+        $scope.hideK1 = true;
+        $scope.hideK2 = true;
+        $scope.hideN = true;
+        $scope.hideRp = false;
+        $scope.hideI = false;
+        $scope.hideM = false;
+        $scope.hideSeed = false;
+        break;
+      case "BullSpread":
+        $scope.hideK1 = false;
+        $scope.hideK2 = false;      
+        $scope.hideK = true;
+        $scope.hideRp = true;
+        $scope.hideN = true;
+        $scope.hideI = true;
+        $scope.hideM = true;
+        $scope.hideSeed = true;
+        break;
+      case "European":
+        $scope.hideK1 = true;
+        $scope.hideK2 = true;      
+        $scope.hideK = false;
+        $scope.hideRp = true;
+        $scope.hideN = true;
+        $scope.hideI = true;
+        $scope.hideM = true;
+        $scope.hideSeed = true;
+        break;
+    }
+  };
+  
+  
+});
+</script>
+{% endblock %}
+

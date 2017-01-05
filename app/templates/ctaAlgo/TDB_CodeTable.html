@@ -15,7 +15,7 @@
     <h1>Hello, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}Stranger{% endif %}!</h1>
 </div>
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-2">
         {% if current_user.can(Permission.WRITE_ARTICLES) %}
         {{ wtf.quick_form(form,id="ctaRunForm") }}
         {% endif %}
@@ -23,10 +23,9 @@
 </div>
 <div class="panel panel-warning page-header">
     <div class="panel-heading">
-        <div id="updateTime"></div>
     </div>
     <div class="panel-body">
-        <div id="result"></div>
+        <div id="result"></div>     
     </div>
 </div>
 {% endblock %}
@@ -35,5 +34,19 @@
 {{ super() }}
 <script type="text/javascript">
 $("#result").parent().parent().hide()
+$(document).ready(function(){
+    $("#ctaRunForm").submit(function () {
+        $.ajax({ type: 'POST', data: $(this).serialize(), url: '',
+            success: function (resultData) { 
+                $("#result").parent().parent().show()
+                $("#result").html(resultData); 
+            },
+            error: function (xhr) {
+                alert("error");
+            } 
+        });
+        return false;
+    });            
+});
 </script>
 {% endblock %}

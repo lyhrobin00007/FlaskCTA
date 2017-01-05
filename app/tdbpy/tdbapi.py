@@ -6,6 +6,7 @@ Created on Wed Sep 07 13:21:35 2016
 """
 
 import tdbpy
+from datetime import datetime, timedelta
 
 pSetting = {
     'szIP':"172.22.137.140",
@@ -132,6 +133,9 @@ class tdbapi():
 #        szMarket in ['SZ','SH','QH','CF','SHF','CZC','DCE']
         pCodeTable=[]
         flag = self.TDB_ERROR(self.tdbapi.TDB_GetCodeTable(szMarket,pCodeTable))
+        for i,d in enumerate(pCodeTable):
+            pCodeTable[i]['chCNName'] = d['chCNName'].decode('gbk','replace')
+#            pCodeTable[i]['chCNName'] = d['chCNName'].decode('gbk','ignore')
         return pCodeTable,flag
 
     def TDB_GetKLine(self,reqKL):
@@ -199,6 +203,49 @@ class tdbapi():
         flag = self.TDB_ERROR(self.tdbapi.TDB_DeleteFormula(self,szFormulaName,pDelRes))
         return pDelRes,flag
 #------------------------------------------------------------------------------
+# 辅助函数
+    def cleanDataFutureAB(self,dataList):
+        multi = 10000.0
+        for i,tmp in enumerate(dataList):
+            d = {}
+            d['windCode'] = unicode(tmp['chWindCode'])
+            d['vtSymbol'] = d['windCode'].split('.')[0]           # vt系统代码
+            d['symbol'] = d['vtSymbol']            # 合约代码
+            d['exchange'] = u''                       # 交易所代码    
+                        
+            # 成交数据
+            d['lastPrice'] = tmp['nPrice']/multi            # 最新成交价
+            d['volume'] = tmp['iAccVolume']                 # 最新成交量
+            d['turnover'] = float(tmp['iAccTurover'])
+            d['openInterest'] = tmp['nPrice']           # 持仓量
+            d['preOpenInterest'] = tmp['nPrePosition']
+    
+            d['openPrice'] = tmp['nOpen']/multi
+            d['highestPrice'] = tmp['nHigh']/multi
+            d['lowestPrice'] = tmp['nLow']/multi
+            d['preClosePrice'] = tmp['nPreClose']/multi
+            d['settlementPrice'] = tmp['nSettle']/multi
+            d['preSettlementPrice'] = tmp['nPreSettle']/multi
+                    
+            # tick的时间
+            d['date'] = unicode(tmp['nDate'])            # 日期
+            d['time'] = unicode(tmp['nTime'])
+            d['time'] = u'0'*(9-len(d['time']))+d['time']
+            d['time'] = d['time'][0:2]+':'+d['time'][2:4]+':'+d['time'][4:6]+'.'+d['time'][6:9]         # 时间
+            d['datetime'] = datetime.strptime(d['date'] + ' ' + d['time'], '%Y%m%d %H:%M:%S.%f')  # python的datetime时间对象
+            if i>0 and d['datetime']<=dataList[i-1]['datetime']:
+                d['datetime'] = dataList[i-1]['datetime']+timedelta(0,0.5,0)
+                d['time'] = d['datetime'].strftime("%H:%M:%S.%f")[:-3]
+           
+            # 五档行情
+            d['bidPrice1'] = tmp['nBidPrice1']/multi
+            d['askPrice1'] = tmp['nAskPrice1']/multi
+            d['bidVolume1'] = tmp['nBidVolume1']
+            d['askVolume1'] = tmp['nAskVolume1']
+            
+            dataList[i] = d
+        return dataList   
+
 
 if __name__ == "__main__":
     testapi = tdbapi()

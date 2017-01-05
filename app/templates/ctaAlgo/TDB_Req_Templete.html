@@ -35,5 +35,20 @@
 {{ super() }}
 <script type="text/javascript">
 $("#result").parent().parent().hide()
+$(document).ready(function(){
+    $("#ctaRunForm").submit(function () {
+        $.ajax({ type: 'POST', data: $(this).serialize(), url: '',
+            success: function (resultData) { 
+                $("#result").parent().parent().show()
+                $("#result").html(resultData.dataTable);
+                $("#updateTime").html(resultData.updateTime); 
+            },
+            error: function (xhr) {
+                alert("error");
+            } 
+        });
+        return false;
+    });           
+});
 </script>
 {% endblock %}
